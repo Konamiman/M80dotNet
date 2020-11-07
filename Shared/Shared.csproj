@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Konamiman.M80dotNet</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Z80 and CPM\Docs\**" />
+    <Compile Remove="Z80 and CPM\Main.Tests\**" />
+    <Compile Remove="Z80 and CPM\ZexallTest\**" />
+    <EmbeddedResource Remove="Z80 and CPM\Docs\**" />
+    <EmbeddedResource Remove="Z80 and CPM\Main.Tests\**" />
+    <EmbeddedResource Remove="Z80 and CPM\ZexallTest\**" />
+    <None Remove="Z80 and CPM\Docs\**" />
+    <None Remove="Z80 and CPM\Main.Tests\**" />
+    <None Remove="Z80 and CPM\ZexallTest\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="FileControlBlock.cs" />
+  </ItemGroup>
+
+</Project>
