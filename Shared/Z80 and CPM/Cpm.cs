@@ -77,13 +77,7 @@ namespace Konamiman.M80dotNet
                     filePath = GetFullPathFromFcb();
                     if (File.Exists(filePath))
                     {
-                        var stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
-                        var index = SetFcbIndex();
-                        OpenFiles[index] = stream;
-
-                        var fileSize = (int)stream.Length;
-                        var fileSizeBytes = BitConverter.GetBytes(fileSize);
-                        Array.Copy(fileSizeBytes, 0, Memory, DE + 16, fileSizeBytes.Length);
+                        DoOpenFile(filePath);
 
                         L = A = 0;
                     }
@@ -184,7 +178,9 @@ namespace Konamiman.M80dotNet
                     }
 
                     filePath = GetFullPathFromFcb();
-                    File.Create(filePath).Close();
+                    File.Create(filePath).Close(); //WIP: keep open
+
+                    DoOpenFile(filePath);
 
                     L = A = 0;
 
@@ -250,6 +246,17 @@ namespace Konamiman.M80dotNet
             }
 
             OpenFiles.Clear();
+        }
+
+        private void DoOpenFile(string filePath)
+        {
+            var stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+            var index = SetFcbIndex();
+            OpenFiles[index] = stream;
+
+            var fileSize = (int)stream.Length;
+            var fileSizeBytes = BitConverter.GetBytes(fileSize);
+            Array.Copy(fileSizeBytes, 0, Memory, DE + 16, fileSizeBytes.Length);
         }
     }
 }
