@@ -8,10 +8,12 @@
 
   <ItemGroup>
     <None Remove="L80.COM" />
+    <None Remove="L80P.COM" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="L80.COM" />
+    <EmbeddedResource Include="L80P.COM" />
   </ItemGroup>
 
   <ItemGroup>

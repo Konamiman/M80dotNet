@@ -37,7 +37,7 @@ namespace Konamiman.Z80dotNet.L80
             z80 = new Z80Processor(WorkingDirectory);
 
             z80.Memory[4] = 0; //Current drive
-            z80.Memory[6] = 0xE0; //End of TPA
+            z80.Memory[6] = 0xFF; //End of TPA
             z80.Memory[7] = 0xFF;
 
             if (RunInInteractiveMode)
@@ -56,7 +56,8 @@ namespace Konamiman.Z80dotNet.L80
                 Array.Copy(commandLineBytes, 0, z80.Memory, 0x81, commandLineBytes.Length);
             }
 
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Konamiman.M80dotNet.L80.L80.COM");
+            var programFileName = RunInInteractiveMode ? "L80" : "L80P";
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Konamiman.M80dotNet.L80.{programFileName}.COM");
             byte[] program = null;
             using (var memoryStream = new MemoryStream())
             {
@@ -64,32 +65,9 @@ namespace Konamiman.Z80dotNet.L80
                 program = memoryStream.ToArray();
             }
 
-            if (!RunInInteractiveMode)
-            {
-                //M80 jumps to interactive mode on fatal error (loading error, out of memory...),
-                //we need to apply a hack to make it terminate instead.
-
-                //On fatal error, after printing the error, jump to 0xFF00 instead to going interactive.
-                program[0x01F4 - 0x100] = 0xE0;
-                program[0x01F5 - 0x100] = 0xFF;
-
-                //In 0xFF00: set error flag, then jump to 0 to terminate program.
-                var hack = new byte[] {
-                    0xCD, 0xD0, 0x03, //call PUTS
-
-                   // 0x1E, 10,   //ld e,10 (LF)
-                   // 0x0E, 2,    //ld c,2 (.CONOUT)
-                   // 0xCD, 5, 0, //call 5
-
-                    0x3E, 1,    //ld a,1
-                    0x32, 0xFF, 0xFF, //ld (0xFFFF),a
-                    0xC3, 0, 0        //jp 0
-                };
-                Array.Copy(hack, 0, z80.Memory, 0xFFE0, hack.Length);
-            }
-
             Array.Copy(program, 0, z80.Memory, 0x100, program.Length);
-            z80.Memory[0xFFFF] = 0;
+            z80.Memory[0x007E] = 0;
+            z80.Memory[0x007F] = 0;
 
             if (MeasureExecutionTime && !RunInInteractiveMode)
             {
@@ -106,7 +84,7 @@ namespace Konamiman.Z80dotNet.L80
 
             z80.CloseFiles();
 
-            Environment.Exit(z80.Memory[0xFFFF] == 0 ? 0 : 1);
+            Environment.Exit(z80.Memory[0x007F]);
         }
 
         private void ProcessArguments(string[] args)

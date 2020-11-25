@@ -20,10 +20,12 @@
 
   <ItemGroup>
     <None Remove="M80.COM" />
+    <None Remove="M80P.COM" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="M80.COM" />
+    <EmbeddedResource Include="M80P.COM" />
   </ItemGroup>
 
   <ItemGroup>

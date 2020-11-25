@@ -60,7 +60,7 @@ namespace Konamiman.Z80dotNet.M80
                 Array.Copy(commandLineBytes, 0, z80.Memory, 0x81, commandLineBytes.Length);
             }
 
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Konamiman.M80dotNet.M80.M80.COM");
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Konamiman.M80dotNet.M80.M80P.COM");
             byte[] program = null;
             using (var memoryStream = new MemoryStream())
             {
@@ -68,28 +68,9 @@ namespace Konamiman.Z80dotNet.M80
                 program = memoryStream.ToArray();
             }
 
-            if (!RunInInteractiveMode)
-            {
-                //M80 jumps to interactive mode on fatal error (command error, file not found),
-                //we need to apply a hack to make it terminate instead.
-
-                //On fatal error, after printing the error, jump to 0xFF00 instead to going interactive.
-                program[0x46EA - 0x100] = 0xF0;
-                program[0x46EB - 0x100] = 0xFF;
-
-                //In 0xFF00: increase error count (that's done by 0x1B21), then jump to 0 to terminate program.
-                var hack = new byte[] {
-                    0x1E, 10,   //ld e,10 (LF)
-                    0x0E, 2,    //ld c,2 (.CONOUT)
-                    0xCD, 5, 0, //call 5
-
-                    0xCD, 0x21, 0x1B, //call 0x1B21 (increase error count)
-                    0xC3, 0, 0        //jp 0
-                };
-                Array.Copy(hack, 0, z80.Memory, 0xFFF0, hack.Length);
-            }
-
             Array.Copy(program, 0, z80.Memory, 0x100, program.Length);
+            z80.Memory[0x007E] = 0;
+            z80.Memory[0x007F] = 0;
 
             if (MeasureExecutionTime && !RunInInteractiveMode)
             {
@@ -106,7 +87,7 @@ namespace Konamiman.Z80dotNet.M80
 
             z80.CloseFiles();
 
-            Environment.Exit(z80.Memory[0x3CED] == 0 ? 0 : 1);
+            Environment.Exit(z80.Memory[0x007F]);
         }
 
         private void ProcessArguments(string[] args)

@@ -14,8 +14,6 @@ namespace Konamiman.M80dotNet
     {
         private const int CpmRecordSize = 128;
 
-        private const byte DollarCode = 36;
-
         private ushort DTA;
 
         private readonly Dictionary<ushort, FileStream> OpenFiles = new Dictionary<ushort, FileStream>();
@@ -24,29 +22,52 @@ namespace Konamiman.M80dotNet
 
         private readonly string workingDirectory;
 
+        private readonly ConsoleColor defaultForegroundColor;
+
+        private readonly ConsoleColor defaultBackgroundColor;
+
         private void HandleCpmFunctionCall()
         {
             FileStream fcbFile;
             string filePath;
 
             var function = C;
-
+            
             switch (function)
             {
                 case 2:
                     // Console output
-                    Console.Write(Convert.ToChar(E));
-
-                    break;
-                case 9:
-
-                    // String output
-                    var messageAddress = DE;
-                    byte byteToPrint;
-
-                    while ((byteToPrint = Memory[messageAddress++]) != DollarCode)
+                    if (Memory[0x007E] == 0)
                     {
-                        Console.Write(Convert.ToChar(byteToPrint));
+                        //Normal text
+                        Console.ForegroundColor = defaultForegroundColor;
+                        Console.BackgroundColor = defaultBackgroundColor;
+                        Console.Write(Convert.ToChar(E));
+                    }
+                    else if (Memory[0x007E] == 1)
+                    {
+                        //Warning
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.BackgroundColor = defaultBackgroundColor;
+                        Console.Error.Write(Convert.ToChar(E));
+                        Console.ForegroundColor = defaultForegroundColor;
+                    }
+                    else if (Memory[0x007E] == 2)
+                    {
+                        //Error
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.BackgroundColor = defaultBackgroundColor;
+                        Console.Error.Write(Convert.ToChar(E));
+                        Console.ForegroundColor = defaultForegroundColor;
+                    }
+                    else
+                    {
+                        //Fatal error
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.Error.Write(Convert.ToChar(E));
+                        Console.ForegroundColor = defaultForegroundColor;
+                        Console.BackgroundColor = defaultBackgroundColor;
                     }
 
                     break;

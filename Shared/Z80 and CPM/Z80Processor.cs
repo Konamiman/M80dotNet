@@ -1,4 +1,6 @@
-﻿namespace Konamiman.M80dotNet
+﻿using System;
+
+namespace Konamiman.M80dotNet
 {
     /// <summary>
     /// Z80 processor simulator with partial CP/M function call support.
@@ -21,6 +23,8 @@
             this.workingDirectory = workingDirectory;
             InitializeInstructionTables();
             DTA = 0x0080;
+            defaultForegroundColor = Console.ForegroundColor;
+            defaultBackgroundColor = Console.BackgroundColor;
         }
 
         public void Start(ushort address = 0)

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M80", "M80\M80.csproj", "{4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{28CB3156-28EE-40CE-A11C-B37E0A66086A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L80", "L80\L80.csproj", "{3CAB314B-24DF-4750-8F77-6551CBAB9845}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L80", "L80\L80.csproj", "{3CAB314B-24DF-4750-8F77-6551CBAB9845}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

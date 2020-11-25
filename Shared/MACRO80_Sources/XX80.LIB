@@ -1,0 +1,108 @@
+	.z80
+
+FALSE	equ	0
+TRUE	equ	NOT FALSE
+
+OS	equ	0000h
+BDOS	equ	0005h
+TPATOP	equ	BDOS+1
+CCPbuf	equ	0080h
+TPA	equ	0100h
+
+.conout	equ	 2
+.rdrin	equ	 3
+.lstout	equ	 5
+.getlin	equ	10
+.resdsk	equ	13
+.seldsk	equ	14
+.open	equ	15
+.close	equ	16
+.delete	equ	19
+.rdseq	equ	20
+.wrseq	equ	21
+.make	equ	22
+.rename	equ	23
+.curdsk	equ	25
+.setdma	equ	26
+
+CPMerr	equ	255
+
+.drv	equ	 1
+.nam	equ	 8
+.ext	equ	 3
+_EX	equ	12
+_DIR	equ	16
+_CR	equ	32
+
+FCBlen	equ	 33
+
+RecLng	equ	128
+
+null	equ	00h
+tab	equ	09h
+lf	equ	0ah
+ff	equ	0ch
+cr	equ	0dh
+eof	equ	1ah
+
+MSB	equ	10000000b
+NoMSB	equ	01111111b
+LoMask	equ	00001111b
+COLTAB	equ	00000111b
+;
+; Address modes
+;
+@@mod	equ	11b		; Two bits
+;
+@cseg	equ	01b		; CSEG
+@dseg	equ	10b		; DSEG
+@COMM	equ	11b		; COMMON
+
+relbits	equ	8
+
+;
+; Microsoft REL types
+;
+_ENTRY	equ	0000b
+_SELCOM	equ	0001b
+_PRGNAM	equ	0010b
+_LIBRQ	equ	0011b
+_MSLNK	equ	0100b
+_DEFCOM	equ	0101b
+_CHNEXT	equ	0110b
+_DEFENT	equ	0111b
+_EXTOFF	equ	1001b
+_DATSIZ	equ	1010b
+_LOCATE	equ	1011b
+_PRGSIZ	equ	1101b
+_ENDMOD	equ	1110b
+_ENDPRG	equ	1111b
+
+; Label flag definition
+
+.COMMON	equ	10000000b
+.Public	equ	01000000b
+.Libreq	equ	00100000b
+.Unk	equ	00010000b
+.Known	equ	00001000b
+.LenMsk	equ	00000111b
+;
+ModLen	equ	  6		; Max module name length
+SymLen	equ	  6		; Max symbol name length
+LabLen	equ	 16		; Max label length
+
+; ######## Definitions added for the M80dotNet project #######
+
+PrMode_Normal equ 0
+PrMode_Warning equ 1
+PrMode_Error equ 2
+PrMode_Fatal equ 3
+
+;Current print mode.
+;Will be read by Z80 emulator to determine where to print (STDOUT/STDERR)
+;and in which color when .conout BDOS call is executed.
+CurrentPrMode equ 7Eh
+
+;Exit code to be used by Z80 emulator to terminate its own process.
+ExitCode equ 7Fh
+
