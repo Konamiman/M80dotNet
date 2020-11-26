@@ -18,13 +18,14 @@ namespace Konamiman.M80dotNet
     {
         public byte[] Memory { get; private set; } = new byte[65536];
 
-        public Z80Processor(string workingDirectory)
+        public Z80Processor(string workingDirectory, bool printInColor)
         {
             this.workingDirectory = workingDirectory;
             InitializeInstructionTables();
             DTA = 0x0080;
             defaultForegroundColor = Console.ForegroundColor;
             defaultBackgroundColor = Console.BackgroundColor;
+            this.printInColor = printInColor;
         }
 
         public void Start(ushort address = 0)

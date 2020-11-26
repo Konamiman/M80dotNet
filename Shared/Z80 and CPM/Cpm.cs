@@ -26,7 +26,23 @@ namespace Konamiman.M80dotNet
 
         private readonly ConsoleColor defaultBackgroundColor;
 
+        private readonly bool printInColor;
+
         private void HandleCpmFunctionCall()
+        {
+            try
+            {
+                HandleCpmFunctionCallCore();
+            }
+            catch(Exception ex)
+            {
+                PrintFatalError($"*** {ex.GetType().Name}: {ex.Message}");
+                Memory[0x7F] = 3;
+                PC = 0xFFFF; //Upon return, PC will be increased; on PC=0 program terminates.
+            }
+        }
+
+        private void HandleCpmFunctionCallCore()
         {
             FileStream fcbFile;
             string filePath;
@@ -37,37 +53,44 @@ namespace Konamiman.M80dotNet
             {
                 case 2:
                     // Console output
-                    if (Memory[0x007E] == 0)
+                    if (printInColor)
                     {
-                        //Normal text
-                        Console.ForegroundColor = defaultForegroundColor;
-                        Console.BackgroundColor = defaultBackgroundColor;
-                        Console.Write(Convert.ToChar(E));
-                    }
-                    else if (Memory[0x007E] == 1)
-                    {
-                        //Warning
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.BackgroundColor = defaultBackgroundColor;
-                        Console.Error.Write(Convert.ToChar(E));
-                        Console.ForegroundColor = defaultForegroundColor;
-                    }
-                    else if (Memory[0x007E] == 2)
-                    {
-                        //Error
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.BackgroundColor = defaultBackgroundColor;
-                        Console.Error.Write(Convert.ToChar(E));
-                        Console.ForegroundColor = defaultForegroundColor;
+                        if (Memory[0x007E] == 0)
+                        {
+                            //Normal text
+                            Console.ForegroundColor = defaultForegroundColor;
+                            Console.BackgroundColor = defaultBackgroundColor;
+                            Console.Write(Convert.ToChar(E));
+                        }
+                        else if (Memory[0x007E] == 1)
+                        {
+                            //Warning
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.BackgroundColor = defaultBackgroundColor;
+                            Console.Error.Write(Convert.ToChar(E));
+                            Console.ForegroundColor = defaultForegroundColor;
+                        }
+                        else if (Memory[0x007E] == 2)
+                        {
+                            //Error
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.BackgroundColor = defaultBackgroundColor;
+                            Console.Error.Write(Convert.ToChar(E));
+                            Console.ForegroundColor = defaultForegroundColor;
+                        }
+                        else
+                        {
+                            //Fatal error
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.BackgroundColor = ConsoleColor.Red;
+                            Console.Error.Write(Convert.ToChar(E));
+                            Console.ForegroundColor = defaultForegroundColor;
+                            Console.BackgroundColor = defaultBackgroundColor;
+                        }
                     }
                     else
                     {
-                        //Fatal error
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.BackgroundColor = ConsoleColor.Red;
-                        Console.Error.Write(Convert.ToChar(E));
-                        Console.ForegroundColor = defaultForegroundColor;
-                        Console.BackgroundColor = defaultBackgroundColor;
+                        (Memory[0x007E] == 0 ? Console.Out : Console.Error).Write(Convert.ToChar(E));
                     }
 
                     break;
@@ -278,6 +301,37 @@ namespace Konamiman.M80dotNet
             var fileSize = (int)stream.Length;
             var fileSizeBytes = BitConverter.GetBytes(fileSize);
             Array.Copy(fileSizeBytes, 0, Memory, DE + 16, fileSizeBytes.Length);
+        }
+
+        public void PrintFatalError(string message)
+        {
+            if(printInColor)
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine(message);
+                Console.ForegroundColor = defaultForegroundColor;
+                Console.BackgroundColor = defaultBackgroundColor;
+            }
+            else
+            {
+                Console.Error.WriteLine(message);
+            }
+        }
+
+        public void PrintExtraInfo(string message)
+        {
+            if (printInColor)
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine(message);
+                Console.ForegroundColor = defaultForegroundColor;
+                Console.BackgroundColor = defaultBackgroundColor;
+            }
+            else
+            {
+                Console.WriteLine(message);
+            }
         }
     }
 }

@@ -21,6 +21,8 @@ namespace Konamiman.M80dotNet
 
         private string ProgramName;
 
+        private bool PrintInColor;
+
         public ProgramBase(string programName)
         {
             this.ProgramName = programName;
@@ -39,7 +41,7 @@ namespace Konamiman.M80dotNet
                 }
             }
 
-            z80 = new Z80Processor(WorkingDirectory);
+            z80 = new Z80Processor(WorkingDirectory, PrintInColor);
 
             z80.Memory[4] = 0; //Current drive
             z80.Memory[6] = 0xFF; //End of TPA
@@ -54,8 +56,8 @@ namespace Konamiman.M80dotNet
                 var commandLineBytes = Encoding.ASCII.GetBytes(args[args.Length - 1]);
                 if (commandLineBytes.Length > 127)
                 {
-                    Console.WriteLine("*** The maximum length of the command line is 127 bytes.");
-                    Environment.Exit(1);
+                    z80.PrintFatalError("*** The maximum length of the command line is 127 bytes.");
+                    Environment.Exit(3);
                 }
                 z80.Memory[0x80] = (byte)commandLineBytes.Length;
                 Array.Copy(commandLineBytes, 0, z80.Memory, 0x81, commandLineBytes.Length);
@@ -80,7 +82,7 @@ namespace Konamiman.M80dotNet
                 sw.Start();
                 z80.Start(0x100);
                 sw.Stop();
-                Console.WriteLine($"{Environment.NewLine}Execution time: {sw.Elapsed}");
+                z80.PrintExtraInfo($"{Environment.NewLine}Execution time: {sw.Elapsed}");
             }
             else
             {
@@ -98,6 +100,7 @@ namespace Konamiman.M80dotNet
             MustShowBanner = true;
             RunInInteractiveMode = false;
             MeasureExecutionTime = false;
+            PrintInColor = true;
 
             var envCommandLine = Environment.GetEnvironmentVariable($"{ProgramName}_COMMAND_LINE");
             if (envCommandLine != null)
@@ -142,6 +145,14 @@ namespace Konamiman.M80dotNet
                 {
                     MeasureExecutionTime = false;
                 }
+                else if (args[i] == "-a")
+                {
+                    PrintInColor = true;
+                }
+                else if (args[i] == "-na")
+                {
+                    PrintInColor = false;
+                }
                 else
                 {
                     ShowHelpAndExit();
@@ -184,6 +195,8 @@ Usage: {ProgramName} [-w <working dir>] [-i|-ni] [-b|-nb] <command line for {Pro
 -nb: Don't show program banner
 -t: Measure execution time
 -nt: Don't measure execution time (default)
+-a: Print in console using ANSI colors (default)
+-na: Don't print in console using ANSI colors
 
 Command line for {ProgramName} is required when not running in interactive move.
 
