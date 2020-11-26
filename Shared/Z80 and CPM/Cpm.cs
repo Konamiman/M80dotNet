@@ -229,6 +229,24 @@ namespace Konamiman.M80dotNet
                     L = A = 0;
 
                     break;
+                case 23:
+                    // Rename file
+                    var oldName = GetFullPathFromFcb();
+                    var newName = GetFullPathFromFcb(17);
+
+                    // We need to do this weird stuff because LIB80 renames files while they're open!
+                    var openFiles = OpenFiles.Where(fs => fs.Value.Name == oldName).ToArray();
+                    foreach(var fileEntry in openFiles)
+                    {
+                        var position = fileEntry.Value.Position;
+                        fileEntry.Value.Close();
+                        File.Move(oldName, newName, true);
+                        var newStream = File.Open(newName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+                        newStream.Seek(position, SeekOrigin.Begin);
+                        OpenFiles[fileEntry.Key] = newStream;
+                    }
+
+                    break;
                 case 25:
                     // Get current drive
                     A = L = 0;
@@ -274,12 +292,12 @@ namespace Konamiman.M80dotNet
             return assignedIndex;
         }
 
-        private string GetFullPathFromFcb()
+        private string GetFullPathFromFcb(byte offset = 1)
         {
-            var fcbFileNameBytes = Memory.Skip(DE + 1).Take(11).ToArray();
+            var fcbFileNameBytes = Memory.Skip(DE + offset).Take(11).ToArray();
             var fcbFileName = Encoding.ASCII.GetString(fcbFileNameBytes);
             var fileName = (fcbFileName.Substring(0, 8).TrimEnd() + "." + fcbFileName[8..].TrimEnd()).ToUpper();
-            return Path.Combine(workingDirectory, fileName); // @"c:\code\fun\Nextor\source\kernel\bank0", fileName);
+            return Path.Combine(workingDirectory, fileName);
         }
 
         public void CloseFiles()

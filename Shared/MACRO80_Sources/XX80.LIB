@@ -105,4 +105,3 @@ CurrentPrMode equ 7Eh
 
 ;Exit code to be used by Z80 emulator to terminate its own process.
 ExitCode equ 7Fh
-

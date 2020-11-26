@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Konamiman.M80dotNet.LIB80</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="LIB80.COM" />
+    <None Remove="LIB80P.COM" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="LIB80.COM" />
+    <EmbeddedResource Include="LIB80P.COM" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+</Project>
