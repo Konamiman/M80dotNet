@@ -102,8 +102,9 @@ namespace Konamiman.M80dotNet
             MeasureExecutionTime = false;
             PrintInColor = true;
 
-            var envCommandLine = Environment.GetEnvironmentVariable($"{ProgramName}_COMMAND_LINE");
-            if (envCommandLine != null)
+            var envCommandLine = Environment.GetEnvironmentVariable($"MACRO80_COMMAND_LINE") ?? "";
+            envCommandLine += " " + (Environment.GetEnvironmentVariable($"{ProgramName}_COMMAND_LINE") ?? "");
+            if (!string.IsNullOrWhiteSpace(envCommandLine))
             {
                 args = envCommandLine.Split(' ', StringSplitOptions.RemoveEmptyEntries).Concat(args).ToArray();
             }
