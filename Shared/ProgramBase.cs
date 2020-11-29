@@ -23,9 +23,14 @@ namespace Konamiman.M80dotNet
 
         private bool PrintInColor;
 
+        private bool IsM80;
+
+        private bool Allow8Bit;
+
         public ProgramBase(string programName)
         {
             this.ProgramName = programName;
+            this.IsM80 = programName == "M80";
         }
 
         public void Run(string[] args)
@@ -35,7 +40,7 @@ namespace Konamiman.M80dotNet
             if (MustShowBanner)
             {
                 ShowBanner();
-                if (ProgramName == "M80" && !RunInInteractiveMode)
+                if (IsM80 && !RunInInteractiveMode)
                 {
                     Console.WriteLine();
                 }
@@ -73,6 +78,10 @@ namespace Konamiman.M80dotNet
             }
 
             Array.Copy(program, 0, z80.Memory, 0x100, program.Length);
+            if(IsM80)
+            {
+                z80.Memory[0x007D] = (byte)(Allow8Bit ? 1 : 0);
+            }
             z80.Memory[0x007E] = 0;
             z80.Memory[0x007F] = 0;
 
@@ -82,7 +91,7 @@ namespace Konamiman.M80dotNet
                 sw.Start();
                 z80.Start(0x100);
                 sw.Stop();
-                z80.PrintExtraInfo($"{Environment.NewLine}Execution time: {sw.Elapsed}");
+                z80.PrintExtraInfo($"{Environment.NewLine}{ProgramName} {args[args.Length - 1]} - Execution time: {sw.Elapsed}");
             }
             else
             {
@@ -154,6 +163,14 @@ namespace Konamiman.M80dotNet
                 {
                     PrintInColor = false;
                 }
+                else if (IsM80 && args[i] == "-8")
+                {
+                    Allow8Bit = true;
+                }
+                else if (IsM80 && args[i] == "-n8")
+                {
+                    Allow8Bit = false;
+                }
                 else
                 {
                     ShowHelpAndExit();
@@ -184,6 +201,15 @@ By Konamiman, 2020");
 
         private void ShowUsageHelp()
         {
+            var extra = "";
+            if(IsM80)
+            {
+                extra =
+@"-8: Allow 8 bit characters (with MSB set) in source
+-n8: Don't allow 8 bit characters in source (default)
+";
+            }
+
             Console.WriteLine(
 @$"https://github.com/Konamiman/M80dotNet
 
@@ -198,7 +224,7 @@ Usage: {ProgramName} [-w <working dir>] [-i|-ni] [-b|-nb] <command line for {Pro
 -nt: Don't measure execution time (default)
 -a: Print in console using ANSI colors (default)
 -na: Don't print in console using ANSI colors
-
+{extra}
 Command line for {ProgramName} is required when not running in interactive move.
 
 Arguments can also be specified in a {ProgramName}_COMMAND_LINE environment variable.
