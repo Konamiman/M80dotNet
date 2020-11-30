@@ -514,7 +514,8 @@ l027e:
 	ret
 l028e:
 	call	l0296		; Get character
-	call	MaybeNoMSB	;>>> CHANGED for the M80dotNet project (was: and NoMSB)
+AndNoMSB:				;>>> ADDED for the M80dotNet project
+	and	NoMSB
 	jp	l0271
 ;
 ; Get character from selected source file
@@ -10539,6 +10540,18 @@ l4732:
 ; %%% END OF MYSTERIOUS CODE %%%
 ;
 l473c:
+	;>>> ADDED for the M80dotNet project
+
+	ld a,(Allow8bit)
+	or a
+	jr z,EndAllow8bit
+	xor a
+	ld (AndNoMSB),a
+	ld (AndNoMSB+1),a
+EndAllow8bit:
+
+	;>>> END ADDED for the M80dotNet project
+
 	xor	a
 	ld	(l46f2),a	; Clear byte
 	ld	hl,(TPATOP)	; Get top of memory
@@ -11827,23 +11840,6 @@ Term:
 DoTerm:
 	ld (ExitCode),a
 	jp OS
-
-; Maybe reset the MSB of the input byte
-
-MaybeNoMSB:
-	push af
-	ld a,(Allow8bit)
-	or a
-	jr nz,DontResetMSB
-
-ResetMSB:
-	pop af
-	and NoMSB
-	ret
-
-DontResetMSB:
-	pop af
-	ret
 
 ; ####### END of additional code for the M80dotNet project #######
 
