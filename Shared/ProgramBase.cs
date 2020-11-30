@@ -110,6 +110,7 @@ namespace Konamiman.M80dotNet
             RunInInteractiveMode = false;
             MeasureExecutionTime = false;
             PrintInColor = true;
+            Allow8Bit = false;
 
             var envCommandLine = Environment.GetEnvironmentVariable($"MACRO80_COMMAND_LINE") ?? "";
             envCommandLine += " " + (Environment.GetEnvironmentVariable($"{ProgramName}_COMMAND_LINE") ?? "");
@@ -202,18 +203,20 @@ By Konamiman, 2020");
         private void ShowUsageHelp()
         {
             var extra = "";
+            var extraCmd = "";
             if(IsM80)
             {
                 extra =
 @"-8: Allow 8 bit characters (with MSB set) in source
 -n8: Don't allow 8 bit characters in source (default)
 ";
+                extraCmd = "[-8|-n8] ";
             }
 
             Console.WriteLine(
 @$"https://github.com/Konamiman/M80dotNet
 
-Usage: {ProgramName} [-w <working dir>] [-i|-ni] [-b|-nb] <command line for {ProgramName}>
+Usage: {ProgramName} [-w <working dir>] [-i|-ni] [-b|-nb] {extraCmd}<command line for {ProgramName}>
 
 -w: Set working directory (default: current working directory)
 -i: Run in interactive mode

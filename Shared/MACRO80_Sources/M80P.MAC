@@ -10582,9 +10582,9 @@ l4758:
 	ld	(l408d),a	; ... /X option
 	ld	(l408b),a	; ... /R option
 	ld	(l4091),a	; ... /M option
+	ld	(l4088),a	; ... /I option	;>>> CHANGED for the M80dotNet project, was after the "inc a"
 	inc	a		; Set ...
 	ld	(l408a),a	; ... /P option
-	ld	(l4088),a	; ... /I option
 	ld	bc,l46d7	; Set error return
 	push	bc
 	xor	a
