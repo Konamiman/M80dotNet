@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Konamiman.M80dotNet
 {
-    public class ProgramBase
+    public class ProgramRunner
     {
         private Z80Processor z80;
 
@@ -27,7 +27,7 @@ namespace Konamiman.M80dotNet
 
         private bool Allow8Bit;
 
-        public ProgramBase(string programName)
+        public ProgramRunner(string programName)
         {
             this.ProgramName = programName;
             this.IsM80 = programName == "M80";
