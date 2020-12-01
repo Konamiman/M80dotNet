@@ -7,6 +7,13 @@ using System.Text;
 
 namespace Konamiman.M80dotNet
 {
+    /// <summary>
+    /// Class to run M80/L80/LIB80, includes:
+    /// 
+    /// - Handling command line arguments
+    /// - Running the Z80 simulator
+    /// - Handling exit codes
+    /// </summary>
     public class ProgramRunner
     {
         private Z80Processor z80;
@@ -23,9 +30,18 @@ namespace Konamiman.M80dotNet
 
         private bool PrintInColor;
 
+        // Yes I know, I should use subclassing for that stuff.
+        // But this is a small project, so let's just move on, mkay?
         private bool IsM80;
 
         private bool Allow8Bit;
+
+        // Extra variables used by M80/L80/LIB80,
+        // they are also defined in Shared/MACRO80_Sources/XX80.LIB
+        private const ushort Mem_InteractiveMode = 0x7C;
+        private const ushort Mem_Allow8bit = 0x7D;
+        private const ushort Mem_CurrentPrMode = 0x7E;
+        private const ushort Mem_ExitCode = 0x7F;
 
         public ProgramRunner(string programName)
         {
@@ -48,7 +64,6 @@ namespace Konamiman.M80dotNet
 
             z80 = new Z80Processor(WorkingDirectory, PrintInColor);
 
-            z80.Memory[4] = 0; //Current drive
             z80.Memory[6] = 0xFF; //End of TPA
             z80.Memory[7] = 0xFF;
 
@@ -68,8 +83,7 @@ namespace Konamiman.M80dotNet
                 Array.Copy(commandLineBytes, 0, z80.Memory, 0x81, commandLineBytes.Length);
             }
 
-            var programFileName = RunInInteractiveMode ? ProgramName : ProgramName + "P";
-            var stream = Assembly.GetCallingAssembly().GetManifestResourceStream($"Konamiman.M80dotNet.{ProgramName}.{programFileName}.COM");
+            var stream = Assembly.GetCallingAssembly().GetManifestResourceStream($"Konamiman.M80dotNet.{ProgramName}.{ProgramName}.COM");
             byte[] program = null;
             using (var memoryStream = new MemoryStream())
             {
@@ -78,12 +92,13 @@ namespace Konamiman.M80dotNet
             }
 
             Array.Copy(program, 0, z80.Memory, 0x100, program.Length);
-            if(IsM80)
+            z80.Memory[Mem_InteractiveMode] = (byte)(RunInInteractiveMode ? 1 : 0);
+            if (IsM80)
             {
-                z80.Memory[0x007D] = (byte)(Allow8Bit ? 1 : 0);
+                z80.Memory[Mem_Allow8bit] = (byte)(Allow8Bit ? 1 : 0);
             }
-            z80.Memory[0x007E] = 0;
-            z80.Memory[0x007F] = 0;
+            z80.Memory[Mem_CurrentPrMode] = 0;
+            z80.Memory[Mem_ExitCode] = 0;
 
             if (MeasureExecutionTime && !RunInInteractiveMode)
             {
@@ -100,7 +115,7 @@ namespace Konamiman.M80dotNet
 
             z80.CloseFiles();
 
-            Environment.Exit(z80.Memory[0x007F]);
+            Environment.Exit(z80.Memory[Mem_ExitCode]);
         }
 
         private void ProcessArguments(string[] args)

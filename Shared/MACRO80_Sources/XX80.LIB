@@ -106,5 +106,8 @@ CurrentPrMode equ 7Eh
 ;Exit code to be used by Z80 emulator to terminate its own process.
 ExitCode equ 7Fh
 
-;Flag to indicate if 8 bit characters are wupported (M80 only)
+;Flag to indicate if 8 bit characters are supported (M80 only)
 Allow8bit equ 7Dh
+
+;Flag to indicate if running in interactive mode
+InteractiveMode equ 7Ch

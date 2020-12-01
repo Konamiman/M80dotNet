@@ -8,12 +8,10 @@
 
   <ItemGroup>
     <None Remove="LIB80.COM" />
-    <None Remove="LIB80P.COM" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="LIB80.COM" />
-    <EmbeddedResource Include="LIB80P.COM" />
   </ItemGroup>
 
   <ItemGroup>

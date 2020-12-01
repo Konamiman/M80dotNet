@@ -6,7 +6,7 @@ namespace Konamiman.Z80dotNet.L80
     {
         static void Main(string[] args)
         {
-            new ProgramBase("L80").Run(args);
+            new ProgramRunner("L80").Run(args);
         }
    }
 }

@@ -187,7 +187,7 @@ namespace Konamiman.M80dotNet
                         }
                         else
                         {
-                            L = A = 1;
+                            L = A = 0xFF;
                         }
                     }
                     else

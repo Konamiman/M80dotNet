@@ -262,6 +262,7 @@ l0010	equ	10h
 l0020	equ	20h
 
 l0100:
+	call SetNoError ;>>> ADDED for the M80dotNet project
 	ld	hl,l010a	; Set entry address
 	jp	l470c		; Parse command line
 ;
@@ -514,7 +515,8 @@ l027e:
 	ret
 l028e:
 	call	l0296		; Get character
-	and	NoMSB		; Less bit
+AndNoMSB:				;>>> ADDED for the M80dotNet project
+	and	NoMSB
 	jp	l0271
 ;
 ; Get character from selected source file
@@ -537,6 +539,7 @@ l02a8:
 	ret
 l02af:
 	ld	hl,l0500
+	call SetWarn ;>>> ADDED for the M80dotNet project
 	call	l46cc		; Tell no END statement
 	ld	a,cr
 	ld	(l3d48),a	; Close line
@@ -544,6 +547,9 @@ l02af:
 	ld	a,lf
 	call	l4aee
 	scf
+	call SetNoError	;>>> ADDED for the M80dotNet project
+	call	l1b29	;>>> ADDED for the M80dotNet project
+					;    (treat "no END" as a counted warning)
 	jp	l2db2		; Process real end
 ;
 ; Test character a form feed
@@ -2073,10 +2079,11 @@ l0d49:
 ; Give symbol table overflow message
 ;
 l0d6f:
+	call SetFatal ;>>> ADDED for the M80dotNet project
 	ld	hl,l0d78
 l0d72:
 	call	l46cc		; Give message
-	jp	l0100		; Re-enter
+	jp  MaybeTerm1	;Re-enter	;>>> CHANGED for the M80dotNet project (was: jp l0100)
 ;
 l0d78:
 	db	'?Symbol table full',cr
@@ -7618,6 +7625,12 @@ l2e5a:
 	ld	hl,(l3ced)	; Get error count
 	ld	a,h
 	or	l		; Test any
+
+	push af
+	ld a,' '
+	ld	(l3e11)	,a		;>>> ADDED for the M80dotNet project
+	pop af
+
 	jp	z,l2ecb		; Nope
 	push	hl
 	call	l1adf		; Put number to print device
@@ -7689,7 +7702,7 @@ l2f2c:
 l2f43:
 	call	l4bdb		; Put to list device
 	call	l4c1b		; Close REL file
-	jp	l0100		; Restart
+	jp	MaybeTerm1		; Restart	;>>> CHANGED for the M80dotNet project (was: jp l0100)
 ;
 ; Statistic messages
 ;
@@ -7712,11 +7725,14 @@ l2f6b:
 ; Give repetition warning
 ;
 l2f77:
+	call SetWarn ;>>> ADDED for the M80dotNet project
 	call	l2fcd		; Tell unterminated repetition
 	ld	hl,l2f86
 	call	l2fd0
 	call	l1b29		; Advance warning count
-	jp	l2fb4		; Close console line
+	call l2fb4	;>>> ADDED for the M80dotNet project
+	call	l2fb4		; Close console line
+	jp SetNoError	;>>> ADDED for the M80dotNet project
 ;
 ; Macro error messages
 ;
@@ -7728,9 +7744,11 @@ l2f9a:
 ;
 ;
 l2fa8:
+	call SetWarn ;>>> ADDED for the M80dotNet project
 	call	l2fcd		; Tell unterminated
 	ld	hl,l2fdd
 	call	l2fd0
+	call SetNoError	;>>> ADDED for the M80dotNet project
 	call	l1b29		; Advance warning count
 ;
 ; Close console line
@@ -10470,8 +10488,10 @@ l46dd:
 l46e3:
 	ld	hl,l46ba
 l46e6:
+	call 	SetFatal ;>>> ADDED for the M80dotNet project
 	call	l46cc		; Give message
-	jp	l4758		; Retry
+	;call	SetNoError ;>>> ADDED for the M80dotNet project
+	jp	MaybeTerm2	;Retry   ;>>> CHANGED for the M80dotNet project (was: jp l4758)
 ;
 	db	'COM'
 	db	'SCN'
@@ -10522,6 +10542,18 @@ l4732:
 ; %%% END OF MYSTERIOUS CODE %%%
 ;
 l473c:
+	;>>> ADDED for the M80dotNet project
+
+	ld a,(Allow8bit)
+	or a
+	jr z,EndAllow8bit
+	xor a
+	ld (AndNoMSB),a
+	ld (AndNoMSB+1),a
+EndAllow8bit:
+
+	;>>> END ADDED for the M80dotNet project
+
 	xor	a
 	ld	(l46f2),a	; Clear byte
 	ld	hl,(TPATOP)	; Get top of memory
@@ -10534,7 +10566,7 @@ l473c:
 	push	hl		; Save for return
 	ld	a,(l408e)	; Test stop
 	or	a
-	jp	nz,OS		; Yeap, so abort
+	jp	nz,Term		; Yeap, so abort	;>>> CHANGED for the M80dotNet project (was: jp OS)
 	ld	(l4085),a	; Clear extra stack page count
 l4758:
 	ld	hl,(l4082)	; Get top of address
@@ -10552,9 +10584,9 @@ l4758:
 	ld	(l408d),a	; ... /X option
 	ld	(l408b),a	; ... /R option
 	ld	(l4091),a	; ... /M option
+	ld	(l4088),a	; ... /I option	;>>> CHANGED for the M80dotNet project, was after the "inc a"
 	inc	a		; Set ...
 	ld	(l408a),a	; ... /P option
-	ld	(l4088),a	; ... /I option
 	ld	bc,l46d7	; Set error return
 	push	bc
 	xor	a
@@ -11020,6 +11052,7 @@ l4a7a:
 	or	a
 	jp	nz,l4a8d
 	call	l4b1b		; Give new line
+	call	SetNoError	;>>> ADDED for the M80dotNet project
 	ld	a,'*'
 	call	l4aee		; Indicate input requested
 l4a8d:
@@ -11099,7 +11132,7 @@ l4aee:
 	ld	c,.conout
 	and	NoMSB		; Less hi bit
 	ld	e,a
-	call	BDOS		; Put it
+	call PrintChar ; Put it   ;>>> CHANGED for the M80dotNet project (was: call BDOS)
 	pop	af
 	pop	bc
 	pop	de
@@ -11578,6 +11611,7 @@ l4d90:
 ;
 l4da1:
 	ld	hl,l4dc1
+	call SetFatal	;>>> ADDED for the M80dotNet project
 	call	l46cc		; Tesll disk full
 	pop	de
 	ld	a,(de)		; Get drive
@@ -11590,7 +11624,7 @@ l4db2:
 	ld	hl,l4dc7
 	call	l46cc
 	call	l4b1b		; Give new line
-	jp	OS		; End exit
+	jp	Term		; End exit	;>>> CHANGED for the M80dotNet project (was: jp OS)
 ;
 l4dc1:
 	db	'DISK ',null
@@ -11724,6 +11758,112 @@ l4f30:
 	pop	de
 	pop	hl
 	ret
+
+; ####### Additional code for the M80dotNet project #######
+
+; Set (permanently) current print mode as "Fatal error"
+
+SetFatal:
+	push af
+	ld a,PrMode_Fatal
+	ld (CurrentPrMode),a
+	pop af
+	ret
+
+; Set current print mode as "Warning", for the warning conditions
+; that don't change the error code at (l3e11).
+
+SetWarn:
+	push af
+	ld a,'Q'
+	ld (l3e11),a
+	pop af
+	ret
+
+; Restore current print mode to "Normal" after having used "SetWarn".
+
+SetNoError:
+	push af
+	ld a,' '
+	ld (l3e11),a
+	xor a
+	ld (CurrentPrMode),a
+	pop af
+	ret
+
+; Print a character after setting PrMode appropriately.
+; Input: C=.conout, E=character to print.
+
+PrintChar:
+	push af
+
+	ld a,(CurrentPrMode)
+	cp PrMode_Fatal
+	jr z,DoPrintChar
+
+	ld a,(l3e11)
+	cp ' '
+	jr z,SetErr0
+	cp 'Q'
+	jr z,SetErr1
+
+SetErr2:
+	ld a,PrMode_Error
+	jr SetErr
+SetErr1:
+	ld a,PrMode_Warning
+	jr SetErr
+SetErr0:
+	xor a
+
+SetErr:
+	ld (CurrentPrMode),a
+DoPrintChar:
+	pop af
+	jp BDOS
+
+; Terminate execution or go back to interactive mode
+
+MaybeTerm1:
+	ld	a,(InteractiveMode)
+	or a
+	jr z,Term
+	call SetNoError
+	jp l0100
+
+MaybeTerm2:
+	ld	a,(InteractiveMode)
+	or a
+	jr z,Term
+	call SetNoError
+	jp l4758
+
+; Terminate execution after appropriately setting ExitCode.
+
+Term:
+	ld a,(CurrentPrMode)
+	cp 3
+	jr z,DoTerm
+
+	ld	hl,(l3ced)
+	ld a,h
+	or l
+	ld a,PrMode_Error
+	jr nz,DoTerm
+
+	ld	hl,(l3cef)
+	ld a,h
+	or l
+	ld a,PrMode_Warning
+	jr nz,DoTerm
+
+	xor a	;ld a,PrMode_Normal
+DoTerm:
+	ld (ExitCode),a
+	jp OS
+
+; ####### END of additional code for the M80dotNet project #######
+
 ;
 ; Close include file
 ;
@@ -11736,4 +11876,3 @@ l4f35:
 l4f80::	;;**
 
 	end
-

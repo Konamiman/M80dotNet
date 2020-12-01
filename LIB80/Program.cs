@@ -6,7 +6,7 @@ namespace Konamiman.Z80dotNet.LIB80
     {
         static void Main(string[] args)
         {
-            new ProgramBase("LIB80").Run(args);
+            new ProgramRunner("LIB80").Run(args);
         }
    }
 }

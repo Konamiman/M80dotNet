@@ -138,7 +138,12 @@ nothlod:
 cmderr:
 	ld	hl,$CMD.ERR	; Tell input error
 anyerrmsg:
+	call	StartFatalError	;>>> ADDED for the M80dotNet project
 	call	puts
+	call	EndError	;>>> ADDED for the M80dotNet project
+	ld		a,(InteractiveMode)	;>>> ADDED for the M80dotNet project
+	or		a			;>>> ADDED for the M80dotNet project
+	jp		z,OS		;>>> ADDED for the M80dotNet project
 rego:
 	xor	a
 	ld	(CCPbuf),a	; Clear input from CCP
@@ -925,10 +930,12 @@ ovlnl:
 ;
 ;
 ovltlerr:
+	call	StartNormalError	;>>> ADDED for the M80dotNet project
 	push	hl
 	ld	hl,$OVL.MES
 l06cb:
 	call	puts
+do_err2:
 	ld	hl,SegTab
 	add	hl,bc
 	ld	a,(hl)
@@ -940,11 +947,13 @@ l06cb:
 	call	puts
 pop.hl:
 	pop	hl
+	call	EndError	;>>> ADDED for the M80dotNet project
 	ret
 ;
 ;
 ;
 l06e1:
+	call	StartNormalError	;>>> ADDED for the M80dotNet project
 	push	hl
 	jp	l06cb
 ;
@@ -1046,6 +1055,7 @@ putc:
 ; Tell file not found
 ;
 prfile:
+	call	StartFatalError	;>>> ADDED for the M80dotNet project
 	ld	hl,rFCB+.drv
 	ld	a,'?'
 	call	putc		; Indicate
@@ -1739,6 +1749,7 @@ l0b5d:
 	ld	(ExecAdr),hl	; .. save it
 	ret
 StrtErr:
+	call	StartFatalError	;>>> ADDED for the M80dotNet project
 	push	hl		; .. save symbol pointer
 	ld	hl,$NO.STRT.SYM
 	call	puts		; Tell undefined start label
@@ -1832,7 +1843,9 @@ l0c2c:
 	jp	z,NoUndef
 	call	DecimByte
 	ld	hl,$UNDEFINED
+	call	StartNormalError	;>>> ADDED for the M80dotNet project
 	call	puts		; .. tell undefined globals
+	call	EndError	;>>> ADDED for the M80dotNet project
 NoUndef:
 	ld	hl,(freebytes)
 	call	DecimWord
@@ -2356,6 +2369,7 @@ BegLoad::
 LnkItm.0:
 	pop	hl
 	call	l1d9f
+	call	EndError	;>>> ADDED for the M80dotNet project
 	
 ;
 ; The REL-80 stream processing
@@ -2787,7 +2801,9 @@ l1175:
 	jp	LnkItm.0
 IllCOMMlen:
 	ld	hl,$COMM.ERR	; Tell error
+	call	StartNormalError	;>>> ADDED for the M80dotNet project
 	call	puts
+	call	EndError	;>>> ADDED for the M80dotNet project
 	pop	hl		; Get back name
 	call	PrLabel		; .. print COMMON
 	ld	a,'/'
@@ -3342,6 +3358,7 @@ l15ee:
 MultDef:
 	push	hl		; .. save symbol pointer
 	ld	hl,$MULT.DEF
+	call	StartNormalError	;>>> ADDED for the M80dotNet project
 	call	puts
 	pop	hl
 	call	PrLabel		; .. tell name
@@ -4188,6 +4205,7 @@ l1a67:
 ;
 ;
 l1a6e:
+	call	StartNormalError	;>>> ADDED for the M80dotNet project
 	push	hl
 	ld	hl,$BAD.FIX
 	call	puts		; Tell bad fixup
@@ -4222,6 +4240,7 @@ l1a8a:
 	ex	de,hl
 	call	printf		; .. print
 	call	nl
+	call	EndError	;>>> ADDED for the M80dotNet project
 	ret
 ;
 $BAD.FIX:
@@ -6674,7 +6693,32 @@ ModName:
 	ds	21
 l2ad3:
 	db	'0'
-;
+
+; ######## Additional code for the M80dotNet project #######
+
+StartNormalError:
+	push af
+	ld a,PrMode_Error
+	ld (CurrentPrMode),a
+	ld (ExitCode),a
+	pop af
+	ret
+
+StartFatalError:
+	push af
+	ld a,PrMode_Fatal
+	ld (CurrentPrMode),a
+	ld (ExitCode),a
+	pop af
+	ret
+
+EndError:
+	push af
+	xor a	;ld a,PrMode_Normal
+	ld (CurrentPrMode),a
+	pop af
+	ret
+
 ; ##### END OF L80 #####
 ;
 topl80:

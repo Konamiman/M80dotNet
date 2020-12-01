@@ -2039,10 +2039,16 @@ Sub.HL.DE:
 MemOvfl:
 	ld	hl,$MemOvfl
 Proc.ERR:
+	ld	a,PrMode_Fatal		;>>> ADDED for the M80dotNet project
+	ld	(CurrentPrMode),a	;>>> ADDED for the M80dotNet project
+	ld	(ExitCode),a	;>>> ADDED for the M80dotNet project
 	ld	a,'?'
 	call	conout		; Indicate error
 	call	string		; .. print it
 	call	NL
+	ld		a,(InteractiveMode)	;>>> ADDED for the M80dotNet project
+	or		a			;>>> ADDED for the M80dotNet project
+	jp	z,OS			;>>> ADDED for the M80dotNet project
 	jp	ReStart		; .. restart
 ;
 $MemOvfl:
