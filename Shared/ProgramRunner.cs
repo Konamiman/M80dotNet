@@ -231,7 +231,7 @@ By Konamiman, 2020");
             Console.WriteLine(
 @$"https://github.com/Konamiman/M80dotNet
 
-Usage: {ProgramName} [-w <working dir>] [-i|-ni] [-b|-nb] {extraCmd}<command line for {ProgramName}>
+Usage: {ProgramName} [-w <working dir>] [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] {extraCmd}<command line for {ProgramName}>
 
 -w: Set working directory (default: current working directory)
 -i: Run in interactive mode
