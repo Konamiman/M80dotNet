@@ -46,6 +46,7 @@ if [ -z "$1" ]; then
 		fi
 fi
 
+rm -f ../../Release/Portable/*.exe rm -rf ../../Release/Portable/?80 rm -rf ../../Release/Portable/LIB80
+
 echo
 output 3 "Build succeeded!"
-
