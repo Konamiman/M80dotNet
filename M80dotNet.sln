@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L80", "L80\L80.csproj", "{3CAB314B-24DF-4750-8F77-6551CBAB9845}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LIB80", "LIB80\LIB80.csproj", "{0AFF7DA9-620D-4854-89C9-D121D0312908}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LIB80", "LIB80\LIB80.csproj", "{0AFF7DA9-620D-4854-89C9-D121D0312908}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5D2DC0FA-8D04-4CB6-BF92-11B3DFBE8716}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
