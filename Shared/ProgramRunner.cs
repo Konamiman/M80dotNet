@@ -127,7 +127,7 @@ namespace Konamiman.M80dotNet
             PrintInColor = true;
             Allow8Bit = false;
 
-            var envCommandLine = Environment.GetEnvironmentVariable($"MACRO80_COMMAND_LINE") ?? "";
+            var envCommandLine = Environment.GetEnvironmentVariable($"X80_COMMAND_LINE") ?? "";
             envCommandLine += " " + (Environment.GetEnvironmentVariable($"{ProgramName}_COMMAND_LINE") ?? "");
             if (!string.IsNullOrWhiteSpace(envCommandLine))
             {
@@ -245,7 +245,7 @@ Usage: {ProgramName} [-w <working dir>] [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] {ext
 {extra}
 Command line for {ProgramName} is required when not running in interactive move.
 
-Arguments can also be specified in a {ProgramName}_COMMAND_LINE environment variable.
+Arguments can also be specified in X80_COMMAND_LINE and {ProgramName}_COMMAND_LINE environment variables.
 ");
         }
     }
