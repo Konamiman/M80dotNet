@@ -11759,7 +11759,7 @@ l4f30:
 	pop	hl
 	ret
 
-; ####### Additional code for the M80dotNet project #######
+;>>> ADDED for the M80dotNet project
 
 ; Set (permanently) current print mode as "Fatal error"
 
@@ -11862,7 +11862,7 @@ DoTerm:
 	ld (ExitCode),a
 	jp OS
 
-; ####### END of additional code for the M80dotNet project #######
+;>>> END ADDED for the M80dotNet project
 
 ;
 ; Close include file

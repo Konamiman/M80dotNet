@@ -91,7 +91,7 @@ ModLen	equ	  6		; Max module name length
 SymLen	equ	  6		; Max symbol name length
 LabLen	equ	 16		; Max label length
 
-; ######## Definitions added for the M80dotNet project #######
+;>>> ADDED for the M80dotNet project
 
 PrMode_Normal equ 0
 PrMode_Warning equ 1
@@ -111,3 +111,5 @@ Allow8bit equ 7Dh
 
 ;Flag to indicate if running in interactive mode
 InteractiveMode equ 7Ch
+
+;>>> END ADDED for the M80dotNet project
