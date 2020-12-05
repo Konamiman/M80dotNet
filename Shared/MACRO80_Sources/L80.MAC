@@ -1841,9 +1841,9 @@ l0c2c:
 	ld	a,(UnDefCnt)
 	or	a
 	jp	z,NoUndef
+	call	StartNormalError	;>>> ADDED for the M80dotNet project
 	call	DecimByte
 	ld	hl,$UNDEFINED
-	call	StartNormalError	;>>> ADDED for the M80dotNet project
 	call	puts		; .. tell undefined globals
 	call	EndError	;>>> ADDED for the M80dotNet project
 NoUndef:
