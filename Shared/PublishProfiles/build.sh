@@ -11,9 +11,9 @@ output() {
 }
 
 publish() {
-	cp $1.pubxml ../../M80/Properties/PublishProfiles/
-	cp $1.pubxml ../../L80/Properties/PublishProfiles/
-	cp $1.pubxml ../../LIB80/Properties/PublishProfiles/
+	mkdir -p ../../M80/Properties/PublishProfiles && cp $1.pubxml ../../M80/Properties/PublishProfiles/
+	mkdir -p ../../L80/Properties/PublishProfiles && cp $1.pubxml ../../L80/Properties/PublishProfiles/
+	mkdir -p ../../LIB80/Properties/PublishProfiles && cp $1.pubxml ../../LIB80/Properties/PublishProfiles/
 	dotnet publish ../../M80dotNet.sln /p:PublishProfile=$1 /p:DebugType=None -c Release
 }
 
