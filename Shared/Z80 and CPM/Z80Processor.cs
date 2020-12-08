@@ -18,7 +18,7 @@ namespace Konamiman.M80dotNet
     {
         public byte[] Memory { get; private set; } = new byte[65536];
 
-        public Z80Processor(string workingDirectory, bool printInColor)
+        public Z80Processor(string workingDirectory, bool printInColor, bool convertCrToLf)
         {
             this.workingDirectory = workingDirectory;
             InitializeInstructionTables();
@@ -26,6 +26,7 @@ namespace Konamiman.M80dotNet
             defaultForegroundColor = Console.ForegroundColor;
             defaultBackgroundColor = Console.BackgroundColor;
             this.printInColor = printInColor;
+            this.convertCrToLf = convertCrToLf;
         }
 
         public void Start(ushort address = 0)

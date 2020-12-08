@@ -26,15 +26,17 @@ namespace Konamiman.M80dotNet
 
         private bool MeasureExecutionTime;
 
-        private string ProgramName;
+        private readonly string ProgramName;
 
         private bool PrintInColor;
 
         // Yes I know, I should use subclassing for that stuff.
         // But this is a small project, so let's just move on, mkay?
-        private bool IsM80;
+        private readonly bool IsM80;
 
         private bool Allow8Bit;
+
+        private bool ConvertCrToLf;
 
         // Extra variables used by M80/L80/LIB80,
         // they are also defined in Shared/MACRO80_Sources/XX80.LIB
@@ -62,7 +64,7 @@ namespace Konamiman.M80dotNet
                 }
             }
 
-            z80 = new Z80Processor(WorkingDirectory, PrintInColor);
+            z80 = new Z80Processor(WorkingDirectory, PrintInColor, ConvertCrToLf);
 
             z80.Memory[6] = 0xFF; //End of TPA
             z80.Memory[7] = 0xFF;
@@ -126,6 +128,7 @@ namespace Konamiman.M80dotNet
             MeasureExecutionTime = false;
             PrintInColor = true;
             Allow8Bit = false;
+            ConvertCrToLf = IsM80;
 
             var envCommandLine = Environment.GetEnvironmentVariable($"X80_COMMAND_LINE") ?? "";
             envCommandLine += " " + (Environment.GetEnvironmentVariable($"{ProgramName}_COMMAND_LINE") ?? "");
@@ -187,6 +190,14 @@ namespace Konamiman.M80dotNet
                 {
                     Allow8Bit = false;
                 }
+                else if (IsM80 && args[i] == "-l")
+                {
+                    ConvertCrToLf = true;
+                }
+                else if (IsM80 && args[i] == "-nl")
+                {
+                    ConvertCrToLf = false;
+                }
                 else
                 {
                     ShowHelpAndExit();
@@ -224,8 +235,11 @@ By Konamiman, 2020");
                 extra =
 @"-8: Allow 8 bit characters (with MSB set) in source
 -n8: Don't allow 8 bit characters in source (default)
+-l: Convert CR characters to spaces and LF characters to CR 
+    in source files before processing (default)
+-nl: Don't change CR nor LF characters in source files
 ";
-                extraCmd = "[-8|-n8] ";
+                extraCmd = "[-8|-n8] [-l|-nl]";
             }
 
             Console.WriteLine(

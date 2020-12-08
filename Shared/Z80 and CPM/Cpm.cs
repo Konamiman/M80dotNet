@@ -13,6 +13,10 @@ namespace Konamiman.M80dotNet
     partial class Z80Processor
     {
         private const int CpmRecordSize = 128;
+        private const int Char_CR = 13;
+        private const int Char_LF = 10;
+        private const int Char_Space = 32;
+        private const int Char_EOF = 0x1A;
 
         private ushort DTA;
 
@@ -27,6 +31,8 @@ namespace Konamiman.M80dotNet
         private readonly ConsoleColor defaultBackgroundColor;
 
         private readonly bool printInColor;
+
+        private readonly bool convertCrToLf;
 
         private void HandleCpmFunctionCall()
         {
@@ -178,9 +184,24 @@ namespace Konamiman.M80dotNet
                         var count = OpenFiles[index].Read(Memory, DTA, CpmRecordSize);
                         if (count > 0)
                         {
+                            if (convertCrToLf)
+                            {
+                                for (var i = 0; i < count; i++)
+                                {
+                                    if (Memory[DTA + i] == Char_CR)
+                                    {
+                                        Memory[DTA + i] = Char_Space;
+                                    }
+                                    else if (Memory[DTA + i] == Char_LF)
+                                    {
+                                        Memory[DTA + i] = Char_CR;
+                                    }
+                                }
+                            }
+
                             for (var i = count; i < CpmRecordSize; i++)
                             {
-                                Memory[DTA + i] = 0x1A; //EOF
+                                Memory[DTA + i] = Char_EOF;
                             }
 
                             L = A = 0;

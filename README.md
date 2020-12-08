@@ -65,6 +65,15 @@ If `-a` is specified then warnings and errors will be output to the console usin
 
 M80 doesn't support 8 bit characters by default: all characters read from the source files will have their MSB zeroed before being processed. This will likely cause assembly errors if the source contains strings with 8 bit characters (encoded in some old extended character set), so the `-8` switch is offered to suppress this MSB zeroing of source bytes. `-n8` will keep the original MSB-zeroing behavior (this is the default).
 
+* `-l` and `-nl` (only for M80)
+
+Originally M80 expects source files to use the CR character (ASCII code 13) to signal line endings, ignoring LF characters (ASCII code 10), and will fail when processing source files that use the Linux convention for line endings (a single LF character).
+
+To prevent this from happening, while still being able to process files using CR+LF line endings, the wrapper will modify the contents of the source files as they are read so that CR characters are converted to spaces and LF characters are converted to CR characters. 
+
+This happens by default, and also if the `-l` switch is supplied. You can use the `-nl` switch if for some reason you need to disable this conversion.
+
+
 ## Environment variables
 
 Additionally to passing wrapper command line arguments directly when running the applications, you can use environment variables for that too. There are four of these: `X80_COMMAND_LINE` applies to all three applications; `M80_COMMAND_LINE`, `L80_COMMAND_LINE` and `LIB80_COMMAND_LINE` are application-specific.
