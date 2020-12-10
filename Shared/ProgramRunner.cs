@@ -38,6 +38,8 @@ namespace Konamiman.M80dotNet
 
         private bool ConvertCrToLf;
 
+        private string[] AdditionalSearchPaths;
+
         // Extra variables used by M80/L80/LIB80,
         // they are also defined in Shared/MACRO80_Sources/XX80.LIB
         private const ushort Mem_InteractiveMode = 0x7C;
@@ -64,7 +66,7 @@ namespace Konamiman.M80dotNet
                 }
             }
 
-            z80 = new Z80Processor(WorkingDirectory, PrintInColor, ConvertCrToLf);
+            z80 = new Z80Processor(WorkingDirectory, PrintInColor, ConvertCrToLf, AdditionalSearchPaths);
 
             z80.Memory[6] = 0xFF; //End of TPA
             z80.Memory[7] = 0xFF;
@@ -129,6 +131,7 @@ namespace Konamiman.M80dotNet
             PrintInColor = true;
             Allow8Bit = false;
             ConvertCrToLf = IsM80;
+            AdditionalSearchPaths = new string[0];
 
             var envCommandLine = Environment.GetEnvironmentVariable($"X80_COMMAND_LINE") ?? "";
             envCommandLine += " " + (Environment.GetEnvironmentVariable($"{ProgramName}_COMMAND_LINE") ?? "");
@@ -149,6 +152,20 @@ namespace Konamiman.M80dotNet
 
                     WorkingDirectory = args[i + 1];
                     i++;
+                }
+                else if (args[i] == "-p")
+                {
+                    if (i == args.Length - 1)
+                    {
+                        ShowHelpAndExit();
+                    }
+
+                    AdditionalSearchPaths = AdditionalSearchPaths.Concat(args[i + 1].Split(',')).ToArray();
+                    i++;
+                }
+                else if (args[i] == "-np")
+                {
+                    AdditionalSearchPaths = new string[0];
                 }
                 else if (args[i] == "-i")
                 {
@@ -245,9 +262,11 @@ By Konamiman, 2020");
             Console.WriteLine(
 @$"https://github.com/Konamiman/M80dotNet
 
-Usage: {ProgramName} [-w <working dir>] [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] {extraCmd}<command line for {ProgramName}>
+Usage: {ProgramName} [-w <working dir>] [-p <path>[,<path>...]] [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] {extraCmd}<command line for {ProgramName}>
 
 -w: Set working directory (default: current working directory)
+-p: Additional paths to search for files (comma separated list)
+-np: Forget any additional search paths previously specified with -p
 -i: Run in interactive mode
 -ni: Don't run in interactive mode (default)
 -b: Show program banner (default)

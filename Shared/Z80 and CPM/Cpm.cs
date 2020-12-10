@@ -34,6 +34,8 @@ namespace Konamiman.M80dotNet
 
         private readonly bool convertCrToLf;
 
+        private readonly string[] searchPaths;
+
         private void HandleCpmFunctionCall()
         {
             try
@@ -124,7 +126,7 @@ namespace Konamiman.M80dotNet
                     break;
                 case 15:
                     // Open file
-                    filePath = GetFullPathFromFcb();
+                    filePath = GetFullPathFromFcb(true);
                     if (File.Exists(filePath))
                     {
                         DoOpenFile(filePath);
@@ -253,7 +255,7 @@ namespace Konamiman.M80dotNet
                 case 23:
                     // Rename file
                     var oldName = GetFullPathFromFcb();
-                    var newName = GetFullPathFromFcb(17);
+                    var newName = GetFullPathFromFcb(false, 17);
 
                     // We need to do this weird stuff because LIB80 renames files while they're open!
                     var openFiles = OpenFiles.Where(fs => fs.Value.Name == oldName).ToArray();
@@ -313,11 +315,24 @@ namespace Konamiman.M80dotNet
             return assignedIndex;
         }
 
-        private string GetFullPathFromFcb(byte offset = 1)
+        private string GetFullPathFromFcb(bool useSearchPaths = false, byte offset = 1)
         {
             var fcbFileNameBytes = Memory.Skip(DE + offset).Take(11).ToArray();
             var fcbFileName = Encoding.ASCII.GetString(fcbFileNameBytes);
             var fileName = (fcbFileName.Substring(0, 8).TrimEnd() + "." + fcbFileName[8..].TrimEnd()).ToUpper();
+
+            if (useSearchPaths)
+            {
+                foreach (var searchPath in searchPaths)
+                {
+                    var candidatePath = Path.Combine(searchPath, fileName);
+                    if (File.Exists(candidatePath))
+                    {
+                        return candidatePath;
+                    }
+                }
+            }
+
             return Path.Combine(workingDirectory, fileName);
         }
 

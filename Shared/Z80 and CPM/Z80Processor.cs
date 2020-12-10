@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 
 namespace Konamiman.M80dotNet
 {
@@ -18,15 +20,19 @@ namespace Konamiman.M80dotNet
     {
         public byte[] Memory { get; private set; } = new byte[65536];
 
-        public Z80Processor(string workingDirectory, bool printInColor, bool convertCrToLf)
+        public Z80Processor(string workingDirectory, bool printInColor, bool convertCrToLf, string[] additionalSearchPaths)
         {
-            this.workingDirectory = workingDirectory;
+            this.workingDirectory = Path.GetFullPath(workingDirectory);
             InitializeInstructionTables();
             DTA = 0x0080;
             defaultForegroundColor = Console.ForegroundColor;
             defaultBackgroundColor = Console.BackgroundColor;
             this.printInColor = printInColor;
             this.convertCrToLf = convertCrToLf;
+
+            var searchPaths = additionalSearchPaths.Select(p => Path.GetFullPath(Path.Combine(workingDirectory, p))).ToList();
+            searchPaths.Insert(0, workingDirectory);
+            this.searchPaths = searchPaths.ToArray();
         }
 
         public void Start(ushort address = 0)

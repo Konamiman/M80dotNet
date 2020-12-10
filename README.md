@@ -5,7 +5,7 @@ If you are into the retrocomputing stuff and write or maintain code in Z80 assem
 This project turns the original M80, L80 and LIB80 applications into modern native applications. This means:
 
 - **Multiplatform native applications** for Windows 32 bit, Windows 64 bit, Windows ARM, Linux 64 bit, Linux ARM and macOS, thanks to the magic of .NET Core (plus a really portable, although not single-file edition). No separate CP/M emulator is needed.
-- Extra command line option to **specify the working directory** where files will be read from and written to (the original applications work on the current directory only).
+- Extra command line options to **specify the working directory** where files will be read from and written to, and to **specify additional file search directories** for files to be read (the original applications work on the current directory only).
 - On error, the applications **terminate instead of going back to interactive mode** (unless explicitly ran in interactive mode via command line switch).
 - **Colored console output** for warnings and errors (can be disabled via command line switch).
 - Regular messages are written to the standard output handle, **warnings and errors are written to the standard error handle**.
@@ -44,6 +44,16 @@ The wrapper defines the following command line arguments. Except for `-w`, they 
 * `-w <working directory>`
 
 The original applications don't support subdirectories, and thus all the files they read must be located in the same directory, which is also the place where new files will be created. By default the current working directory will be used for that, but `-w` can be used to specify a different location.
+
+* `-p <path>[,<path>...]` and `-np`
+
+This option specifies a comma separated list of additional paths to search for files to be read. When any of the applications tries to open a file, it will be searched in the working directory first, and then in any paths specified with this argument in the order in which they were specified. Other file operations (create, delete, rename) will be performed on the working directory only.
+
+Relative paths can be specified, these will be converted to absolute paths based on the implicit or explicit (`-w`) working directory.
+
+The option can be specified multiple times: `-p foo,bar -p fizz,buzz` is equivalent to `-p foo,bar,fizz,buzz`. Thus you can specify some paths [via environment variables](#environment-variables) and then add some more via command line.
+
+The `-np` option will start over the paths list, that is, it will invalidate any previous `-p` option found; thus `-p foo -np -p bar` is equivalent to `-p bar`. This can be useful too in combination with the specification of paths via environment variables.
 
 * `-i` and `-ni`
 
