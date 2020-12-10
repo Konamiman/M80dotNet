@@ -71,13 +71,15 @@ namespace Konamiman.M80dotNet
             z80.Memory[6] = 0xFF; //End of TPA
             z80.Memory[7] = 0xFF;
 
+            var applicationCommandLine = args[args.Length - 1];
+
             if (RunInInteractiveMode)
             {
                 z80.Memory[0x80] = 0;
             }
             else
             {
-                var commandLineBytes = Encoding.ASCII.GetBytes(args[args.Length - 1]);
+                var commandLineBytes = Encoding.ASCII.GetBytes(applicationCommandLine);
                 if (commandLineBytes.Length > 127)
                 {
                     z80.PrintFatalError("*** The maximum length of the command line is 127 bytes.");
@@ -110,7 +112,7 @@ namespace Konamiman.M80dotNet
                 sw.Start();
                 z80.Start(0x100);
                 sw.Stop();
-                z80.PrintExtraInfo($"{Environment.NewLine}{ProgramName} {args[args.Length - 1]} - Execution time: {sw.Elapsed}");
+                z80.PrintExtraInfo($"{Environment.NewLine}{ProgramName} {applicationCommandLine} - Execution time: {sw.Elapsed}");
             }
             else
             {
@@ -119,6 +121,11 @@ namespace Konamiman.M80dotNet
 
             z80.CloseFiles();
 
+            if(z80.Memory[Mem_ExitCode] == 3)
+            {
+                //Fatal errors are printed without line termination
+                Console.WriteLine();
+            }
             Environment.Exit(z80.Memory[Mem_ExitCode]);
         }
 
@@ -256,13 +263,14 @@ By Konamiman, 2020");
     in source files before processing (default)
 -nl: Don't change CR nor LF characters in source files
 ";
-                extraCmd = "[-8|-n8] [-l|-nl]";
+                extraCmd = "[-8|-n8] [-l|-nl] ";
             }
 
             Console.WriteLine(
 @$"https://github.com/Konamiman/M80dotNet
 
-Usage: {ProgramName} [-w <working dir>] [-p <path>[,<path>...]] [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] {extraCmd}<command line for {ProgramName}>
+Usage: {ProgramName} [-w <working dir>] [-p <path>[,<path>...]] 
+           [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] {extraCmd}<command line for {ProgramName}>
 
 -w: Set working directory (default: current working directory)
 -p: Additional paths to search for files (comma separated list)

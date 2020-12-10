@@ -19,7 +19,7 @@ This project makes use of the disassembled sources of the original M80, L80 and 
 
 The native executables contain the original Z80 application binaries and an embedded Z80+CP/M emulator that runs them. The Z80 emulator is a (very) simplified version of [the Z80.NET project](https://github.com/Konamiman/Z80dotNet), where everything that is not strictly needed has been removed for the sake of performance. Conversely, the CP/M part implements only the function calls that are used by the original applications.
 
-The Z80 binaries used are slightly modified versions of the originals; the changes incorporated are needed to implement color printing, exit codes and terminating instead of going to interactive mode. Other than that, there's only one feature change: M80 assumes now that the target CPU is Z80 by default (in the original tool the default target is the Intel 8080).
+The Z80 binaries used are slightly modified versions of the originals; the changes incorporated are needed to implement the extra features like color printing, exit codes, sopporting 8 bit characters and terminating instead of going to interactive mode. Other than that, there's only one feature change: M80 assumes now that the target CPU is Z80 by default (in the original tool the default target is the Intel 8080).
 
 # How to use
 
@@ -33,7 +33,7 @@ Place the chosen variant in a PATH-accessible directory and then run
 
     M80|L80|LIB80[.exe] [<wrapper command line>] <original program command line>
 
-where `<original program command line>` is the command line you want to pass to the original program as defined in its manual, and `<wrapper command line>` are optional extra switches implemented for this project as described below.
+where `<original program command line>` is the command line you want to pass to the original application as defined in its manual, and `<wrapper command line>` are optional extra switches implemented for this project as described below.
 
 For the portable version you'll need to use the `dotnet` tool (part of the .NET Core runtime) to run the applications from the `.dll` files (so `dotnet M80.dll|L80.dll|LIB80.dll ...`), other than that it works the same way as the platform-specific versions.
 
@@ -57,11 +57,11 @@ The `-np` option will start over the paths list, that is, it will invalidate any
 
 * `-i` and `-ni`
 
-If `-i` is specified then the application will run in interactive mode, that is, a prompt will appear and the application will wait for a command to be entered. This is equivalent to running the original application without command line arguments (therefore  `<original program command line>` will be ignored in this case). `-ni` will cause the program to read its command line, process it and then terminate, even if there are errors (this is the default).
+If `-i` is specified then the application will run in interactive mode, that is, a prompt will appear and the application will wait for a command to be entered. This is equivalent to running the original application without command line arguments (therefore  `<original program command line>` will be ignored in this case). `-ni` will cause the application to read its command line, process it and then terminate, even if there are errors (this is the default).
 
 * `-b` and `-nb`
 
-If `-nb` is specified then the initial banner showing the program name, wrapper version and author will not be displayed. `-b` will cause it to be displayed (this is the default).
+If `-nb` is specified then the initial banner showing the application name, wrapper version and author will not be displayed. `-b` will cause it to be displayed (this is the default).
 
 * `-t` and `-nt`
 
