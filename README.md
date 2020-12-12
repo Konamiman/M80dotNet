@@ -33,13 +33,15 @@ Place the chosen variant in a PATH-accessible directory and then run
 
     M80|L80|LIB80[.exe] [<wrapper command line>] <original program command line>
 
-where `<original program command line>` is the command line you want to pass to the original application as defined in its manual, and `<wrapper command line>` are optional extra switches implemented for this project as described below.
+where `<original program command line>` is the command line you want to pass to the original application, and `<wrapper command line>` are optional extra switches implemented for this project as described below. Example: `M80 -w ~/MyProject -8 =FILE`.
 
 For the portable version you'll need to use the `dotnet` tool (part of the .NET Core runtime) to run the applications from the `.dll` files (so `dotnet M80.dll|L80.dll|LIB80.dll ...`), other than that it works the same way as the platform-specific versions.
 
-## Wrapper command line arguments
+## Command line arguments
 
-The wrapper defines the following command line arguments. Except for `-w`, they are all switches that come in pairs so that they can be enabled or disabled.
+For the command line originally defined by each application, see [the applications manual](https://github.com/Konamiman/M80dotNet/blob/master/MACRO80.txt) (retrieved from [the MSX archive site](http://www.msxarchive.nl/pub/msx/programming/asm/m80l80.txt)).
+
+The wrapper defines the following command line arguments. Except for `-w`, they are all switches that come in pairs so that they can be enabled or disabled. You'll see a summary of these arguments if you run the applications without any argument.
 
 * `-w <working directory>`
 
@@ -88,9 +90,21 @@ This happens by default, and also if the `-l` switch is supplied. You can use th
 
 Additionally to passing wrapper command line arguments directly when running the applications, you can use environment variables for that too. There are four of these: `X80_COMMAND_LINE` applies to all three applications; `M80_COMMAND_LINE`, `L80_COMMAND_LINE` and `LIB80_COMMAND_LINE` are application-specific.
 
-For example, if you want to permanently disable color console output and enable the execution time information, you can do `set X80_COMMAND_LINE=-na -t`.
+For example, if you want to permanently disable color console output and enable the execution time information in all three applications, you can do `set X80_COMMAND_LINE=-na -t`.
 
 Arguments specified directly in the command line have precedence over those specified in application-specific environment items; and these in turn have precedence over those specified via `X80_COMMAND_LINE`.
+
+
+## Exit codes
+
+Upon termination the applications will return one of the following exit codes:
+
+* 0: Success (or the application was run without arguments an help has been displayed)
+* 1: Warnings were displayed (for M80 only). The process completed but the generated object file might be incorrect. Example: unterminated conditional assembly block.
+* 2: Errors were encountered (for M80 and L80 only). The process completed but the generated file is incorrect. Example: unknown symbol found.
+* 3: A fatal error aborted the process and no files were generated whatsoever. Examples: file not found, unknown command. This is also the error code that will be returned in case of unexpected error thrown by the wrapper.
+
+When running in interactive mode the applications will terminate when pressing CTRL+C or when issuing the appropriate exit command (as defined in the applications manual), the exit code is undefined in this case.
 
 # Developing
 
