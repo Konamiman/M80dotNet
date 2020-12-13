@@ -25,9 +25,9 @@ The Z80 binaries used are slightly modified versions of the originals; the chang
 
 Download the latest release and choose the variant you want to use:
 
-* **Portable:** Consists of multiple `.dll` files and runs on any platform having the .NET Core 3.1 runtime installed.
-* **Framework-dependant:** Single file, platform-specific applications that also require the .NET Core 3.1 runtime to be installed. This is the perhaps the most convenient variant for frequent use.
-* **Standalone:** Single file, platform-specific applications that have the .NET Core runtime built-in and thus have no dependencies (at the expense of much bigger file sizes). These may be convenient for casual usage, or if you just want to give it a try before installing the .NET runtime.
+* **Portable:** Consists of multiple `.dll` files and runs on any platform having [the .NET Core Runtime 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1) installed.
+* **Framework-dependant:** Single file, platform-specific applications that also require the .NET Core Runtime 3.1 to be installed. This is the perhaps the most convenient variant for frequent use.
+* **Self-contained:** Single file, platform-specific applications that have the .NET Core Runtime built-in and thus have no dependencies (at the expense of much bigger file sizes). These may be convenient for casual usage, or if you just want to give it a try before installing the .NET Runtime.
 
 Place the chosen variant in a PATH-accessible directory and then run
 
@@ -35,7 +35,7 @@ Place the chosen variant in a PATH-accessible directory and then run
 
 where `<original program command line>` is the command line you want to pass to the original application, and `<wrapper command line>` are optional extra switches implemented for this project as described below. Example: `M80 -w ~/MyProject -8 =FILE`.
 
-For the portable version you'll need to use the `dotnet` tool (part of the .NET Core runtime) to run the applications from the `.dll` files (so `dotnet M80.dll|L80.dll|LIB80.dll ...`), other than that it works the same way as the platform-specific versions.
+For the portable version you'll need to use the `dotnet` tool (part of the .NET Core Runtime) to run the applications from the `.dll` files (so `dotnet M80.dll|L80.dll|LIB80.dll ...`), other than that it works the same way as the platform-specific versions.
 
 ## Command line arguments
 
@@ -106,6 +106,7 @@ Upon termination the applications will return one of the following exit codes:
 
 When running in interactive mode the applications will terminate when pressing CTRL+C or when issuing the appropriate exit command (as defined in the applications manual), the exit code is undefined in this case.
 
+
 # Developing
 
 ## The Z80 part
@@ -119,3 +120,8 @@ The `WINBUILD.BAT` script will use `cpm.exe` and the original `M80.COM` and `L80
 The `Shared` project has a `PublishProfiles` folder containing a `build.sh` script and several `.pubxml` files, each containing a publish profile for each of the variants. The script (for Linux, it works on Windows 10 with WSL too) uses the `dotnet` tool to generate all the variants in the `Release` folder in the root directory of the project, you can just run it to build all the variants or pass the name of a publish profile (filename without the `.pubxml`) as a single argument.
 
 If you prefer a more IDE-centric approach for compilation, you can copy all the `.pubxml` files to the `Properties/PublishProfiles` directory of each project, then right-click the project in Visual Studio and select "Publish".
+
+
+# Last but not least...
+
+...if you like this project **[please consider donating!](http://www.konamiman.com/msx/msx-e.html#donate)** My kids need moar shoes!

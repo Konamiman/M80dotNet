@@ -4,7 +4,7 @@
 
 # Build all the programs on all the publish profiles if ran without arguments.
 # Or build only the publish profile supplied as argument (e.g: build.sh SelfContained__win_x64)
-# The built programs are placed in <solution root>\Release.
+# The built programs are placed in <solution root>/Release.
 
 output() {
 	echo "$(tput setaf "$1")$2$(tput sgr0)"

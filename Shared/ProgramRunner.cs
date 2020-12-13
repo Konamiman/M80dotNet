@@ -245,8 +245,11 @@ namespace Konamiman.M80dotNet
 
         private void ShowBanner()
         {
+            // Version number is specified in Shared/AssemblyInfo.cs (and linked in the other projects)
+            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString(2);
+
             Console.WriteLine(
-@$"{ProgramName} .NET wrapper 1.0
+@$"{ProgramName} .NET wrapper {version}
 By Konamiman, 2020");
         }
 
