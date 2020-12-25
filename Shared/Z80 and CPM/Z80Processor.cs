@@ -20,7 +20,7 @@ namespace Konamiman.M80dotNet
     {
         public byte[] Memory { get; private set; } = new byte[65536];
 
-        public Z80Processor(string workingDirectory, bool printInColor, bool convertCrToLf, string[] additionalSearchPaths)
+        public Z80Processor(string workingDirectory, bool printInColor, bool convertCrToLf, string[] additionalSearchPaths, bool caseSensitiveFileSearch)
         {
             this.workingDirectory = Path.GetFullPath(workingDirectory);
             InitializeInstructionTables();
@@ -33,6 +33,11 @@ namespace Konamiman.M80dotNet
             var searchPaths = additionalSearchPaths.Select(p => Path.GetFullPath(Path.Combine(workingDirectory, p))).ToList();
             searchPaths.Insert(0, workingDirectory);
             this.searchPaths = searchPaths.ToArray();
+
+            this.fileSearchEnumerationOptions = new EnumerationOptions 
+            { 
+                MatchCasing = caseSensitiveFileSearch ? MatchCasing.CaseSensitive : MatchCasing.CaseInsensitive 
+            };
         }
 
         public void Start(ushort address = 0)
