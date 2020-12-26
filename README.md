@@ -73,6 +73,12 @@ If `-t` is specified then after the application finishes, with or without error,
 
 If `-a` is specified then warnings and errors will be output to the console using ANSI colors (this is the default). `-na` will cause all console output to be in the default color.
 
+* `-c` and `-nc`
+
+By default (and also when `-nc` is used) the applications will perform a case-insensitive file search when trying to locate an existing file; that is, an existing `foobar.mac` will be a match when searching for `FOOBAR.MAC`. The `-c` option will force the search to be case-sensitive instead.
+
+This options pair and the described search behavior were introduced in v1.1. In v1.0 file search was always case-insensitive in Windows and always case-sensitive in Linux and macOS.
+
 * `-8` and `-n8` (only for M80)
 
 M80 doesn't support 8 bit characters by default: all characters read from the source files will have their MSB zeroed before being processed. This will likely cause assembly errors if the source contains strings with 8 bit characters (encoded in some old extended character set), so the `-8` switch is offered to suppress this MSB zeroing of source bytes. `-n8` will keep the original MSB-zeroing behavior (this is the default).

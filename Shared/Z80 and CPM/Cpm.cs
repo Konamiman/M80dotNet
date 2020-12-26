@@ -36,6 +36,8 @@ namespace Konamiman.M80dotNet
 
         private readonly string[] searchPaths;
 
+        private readonly EnumerationOptions fileSearchEnumerationOptions;
+
         private void HandleCpmFunctionCall()
         {
             try
@@ -127,7 +129,7 @@ namespace Konamiman.M80dotNet
                 case 15:
                     // Open file
                     filePath = GetFullPathFromFcb(true);
-                    if (File.Exists(filePath))
+                    if (filePath != null)
                     {
                         DoOpenFile(filePath);
 
@@ -315,25 +317,31 @@ namespace Konamiman.M80dotNet
             return assignedIndex;
         }
 
+        // When useSearchPaths=true, return null if the file doesn't exist
         private string GetFullPathFromFcb(bool useSearchPaths = false, byte offset = 1)
         {
             var fcbFileNameBytes = Memory.Skip(DE + offset).Take(11).ToArray();
             var fcbFileName = Encoding.ASCII.GetString(fcbFileNameBytes);
             var fileName = (fcbFileName.Substring(0, 8).TrimEnd() + "." + fcbFileName[8..].TrimEnd()).ToUpper();
 
-            if (useSearchPaths)
+            if (!useSearchPaths)
             {
-                foreach (var searchPath in searchPaths)
+                return Path.Combine(workingDirectory, fileName);
+            }
+
+            foreach (var searchPath in searchPaths)
+            {
+                var candidatePath =
+                    Directory
+                    .GetFiles(searchPath, fileName, fileSearchEnumerationOptions)
+                    .FirstOrDefault();
+                if (candidatePath != null)
                 {
-                    var candidatePath = Path.Combine(searchPath, fileName);
-                    if (File.Exists(candidatePath))
-                    {
-                        return candidatePath;
-                    }
+                    return candidatePath;
                 }
             }
 
-            return Path.Combine(workingDirectory, fileName);
+            return null;
         }
 
         public void CloseFiles()

@@ -30,6 +30,8 @@ namespace Konamiman.M80dotNet
 
         private bool PrintInColor;
 
+        private bool CaseSensitiveFileSearch;
+
         // Yes I know, I should use subclassing for that stuff.
         // But this is a small project, so let's just move on, mkay?
         private readonly bool IsM80;
@@ -66,7 +68,7 @@ namespace Konamiman.M80dotNet
                 }
             }
 
-            z80 = new Z80Processor(WorkingDirectory, PrintInColor, ConvertCrToLf, AdditionalSearchPaths);
+            z80 = new Z80Processor(WorkingDirectory, PrintInColor, ConvertCrToLf, AdditionalSearchPaths, CaseSensitiveFileSearch);
 
             z80.Memory[6] = 0xFF; //End of TPA
             z80.Memory[7] = 0xFF;
@@ -139,6 +141,7 @@ namespace Konamiman.M80dotNet
             Allow8Bit = false;
             ConvertCrToLf = IsM80;
             AdditionalSearchPaths = new string[0];
+            CaseSensitiveFileSearch = false;
 
             var envCommandLine = Environment.GetEnvironmentVariable($"X80_COMMAND_LINE") ?? "";
             envCommandLine += " " + (Environment.GetEnvironmentVariable($"{ProgramName}_COMMAND_LINE") ?? "");
@@ -222,6 +225,14 @@ namespace Konamiman.M80dotNet
                 {
                     ConvertCrToLf = false;
                 }
+                else if (args[i] == "-c")
+                {
+                    CaseSensitiveFileSearch = true;
+                }
+                else if (args[i] == "-nc")
+                {
+                    CaseSensitiveFileSearch = false;
+                }
                 else
                 {
                     ShowHelpAndExit();
@@ -273,7 +284,7 @@ By Konamiman, 2020");
 @$"https://github.com/Konamiman/M80dotNet
 
 Usage: {ProgramName} [-w <working dir>] [-p <path>[,<path>...]] 
-           [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] {extraCmd}<command line for {ProgramName}>
+           [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] [-c|-nc] {extraCmd}<command line for {ProgramName}>
 
 -w: Set working directory (default: current working directory)
 -p: Additional paths to search for files (comma separated list)
@@ -286,6 +297,8 @@ Usage: {ProgramName} [-w <working dir>] [-p <path>[,<path>...]]
 -nt: Don't measure execution time (default)
 -a: Print in console using ANSI colors (default)
 -na: Don't print in console using ANSI colors
+-c: Do case-sensitive file searches
+-nc: Do case-insensitive file searches (default)
 {extra}
 Command line for {ProgramName} is required when not running in interactive move.
 
