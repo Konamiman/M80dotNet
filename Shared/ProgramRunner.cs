@@ -284,7 +284,7 @@ By Konamiman, 2020");
 @$"https://github.com/Konamiman/M80dotNet
 
 Usage: {ProgramName} [-w <working dir>] [-p <path>[,<path>...]] 
-           [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] {extraCmd}<command line for {ProgramName}>
+           [-i|-ni] [-b|-nb] [-t|-nt] [-a|-na] [-c|-nc] {extraCmd}<command line for {ProgramName}>
 
 -w: Set working directory (default: current working directory)
 -p: Additional paths to search for files (comma separated list)
