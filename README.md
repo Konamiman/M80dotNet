@@ -25,8 +25,8 @@ The Z80 binaries used are slightly modified versions of the originals; the chang
 
 Download the latest release and choose the variant you want to use:
 
-* **Portable:** Consists of multiple `.dll` files and runs on any platform having [the .NET Core Runtime 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1) installed.
-* **Framework-dependant:** Single file, platform-specific applications that also require the .NET Core Runtime 3.1 to be installed. This is the perhaps the most convenient variant for frequent use.
+* **Portable:** Consists of multiple `.dll` files and runs on any platform having [the .NET Runtime 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed.
+* **Framework-dependant:** Single file, platform-specific applications that also require the .NET Runtime 6.0 to be installed. This is the perhaps the most convenient variant for frequent use.
 * **Self-contained:** Single file, platform-specific applications that have the .NET Core Runtime built-in and thus have no dependencies (at the expense of much bigger file sizes). These may be convenient for casual usage, or if you just want to give it a try before installing the .NET Runtime.
 
 Place the chosen variant in a PATH-accessible directory and then run
@@ -123,9 +123,9 @@ The `WINBUILD.BAT` script will use `cpm.exe` and the original `M80.COM` and `L80
 
 ## Building the wrappers
 
-The `Shared` project has a `PublishProfiles` folder containing a `build.sh` script and several `.pubxml` files, each containing a publish profile for each of the variants. The script (for Linux, it works on Windows 10 with WSL too) uses the `dotnet` tool to generate all the variants in the `Release` folder in the root directory of the project, you can just run it to build all the variants or pass the name of a publish profile (filename without the `.pubxml`) as a single argument.
+To build the wrappers you'll need [the .NET 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0). The `Shared` project has a `PublishProfiles` folder containing a `build.sh` script and several `.pubxml` files, each containing a publish profile for each of the variants. The script (for Linux, it works on Windows 10 with WSL too) uses the `dotnet` tool (part of the .NET SDK) to generate all the variants in the `Release` folder in the root directory of the project, you can just run it to build all the variants or pass the name of a publish profile (filename without the `.pubxml`) as a single argument.
 
-If you prefer a more IDE-centric approach for compilation, you can copy all the `.pubxml` files to the `Properties/PublishProfiles` directory of each project, then right-click the project in Visual Studio and select "Publish".
+You can also use [Visual Studio 2022](https://visualstudio.microsoft.com) for compiling the wrappers: copy all the `.pubxml` files to the `Properties/PublishProfiles` directory of each project, then right-click the project in Visual Studio and select "Publish".
 
 
 # Last but not least...
