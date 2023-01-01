@@ -25,8 +25,8 @@ banner() {
 
 set -e
 
-if [ -z "$(which dotnet > /dev/null && dotnet --list-sdks | grep ^3.1.)" ]; then
-	output 1 "*** .NET SDK 3.1 is not installed! See https://docs.microsoft.com/dotnet/core/install/linux"
+if [ -z "$(which dotnet > /dev/null && dotnet --list-sdks | grep ^6.0.)" ]; then
+	output 1 "*** .NET SDK 6.0 is not installed! See https://docs.microsoft.com/dotnet/core/install/linux"
 	exit 1
 fi
 

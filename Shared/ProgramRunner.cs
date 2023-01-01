@@ -261,7 +261,7 @@ namespace Konamiman.M80dotNet
 
             Console.WriteLine(
 @$"{ProgramName} .NET wrapper {version}
-By Konamiman, 2020");
+By Konamiman, 2023");
         }
 
         private void ShowUsageHelp()
